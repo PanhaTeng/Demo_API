@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Demo_API.Data;
 using Demo_API.Model;
+using Demo_API.Model.Dto;
+using AutoMapper;
 
 namespace Demo_API.Controllers
 {
@@ -15,10 +17,11 @@ namespace Demo_API.Controllers
     public class CompaniesController : ControllerBase
     {
         private readonly DataContext _context;
-
-        public CompaniesController(DataContext context)
+        private readonly IMapper _mapper;
+        public CompaniesController(DataContext context,IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: api/Companies
@@ -29,7 +32,7 @@ namespace Demo_API.Controllers
           {
               return NotFound();
           }
-            return await _context.Companies.Where(x=>x.IsActive.Equals(1)).ToListAsync();
+            return await _context.Companies.Where(x=>x.IsActive.Equals(true)).ToListAsync();
         }
 
         // GET: api/Companies/5
@@ -40,7 +43,7 @@ namespace Demo_API.Controllers
           {
               return NotFound();
           }
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _context.Companies.Where(x=>x.IsActive==true && x.CompanyId==id).FirstAsync();
 
             if (company == null)
             {
@@ -53,8 +56,9 @@ namespace Demo_API.Controllers
         // PUT: api/Companies/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutCompany(int id, Company company)
+        public async Task<IActionResult> PutCompany(int id, CompanyDtoUpdate companyDtoUpdate)
         {
+            var company = _mapper.Map<Company>(companyDtoUpdate);
             if (id != company.CompanyId)
             {
                 return BadRequest();
@@ -84,13 +88,14 @@ namespace Demo_API.Controllers
         // POST: api/Companies
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Company>> PostCompany(Company company)
+        public async Task<ActionResult<Company>> PostCompany(CompanyDtoCreate companyCreate)
         {
+            var company= _mapper.Map<Company>(companyCreate);
           if (_context.Companies == null)
           {
               return Problem("Entity set 'DataContext.Companies'  is null.");
           }
-            _context.Companies.Add(company);
+            _context.Companies.Add(_mapper.Map<Company>(company));
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCompany", new { id = company.CompanyId }, company);
@@ -104,13 +109,12 @@ namespace Demo_API.Controllers
             {
                 return NotFound();
             }
-            var company = await _context.Companies.FindAsync(id);
+            var company = await _context.Companies.Where(x => x.IsActive == true && x.CompanyId == id).FirstAsync();
             if (company == null)
             {
                 return NotFound();
             }
-
-            _context.Companies.Remove(company);
+            company.IsActive = false;
             await _context.SaveChangesAsync();
 
             return NoContent();

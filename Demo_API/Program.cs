@@ -1,5 +1,6 @@
 ﻿global using Microsoft.AspNetCore.Mvc.DataAnnotations;
 using Demo_API.Data;
+using Demo_API.Mapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo_API
@@ -15,6 +16,7 @@ namespace Demo_API
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            builder.Services.AddAutoMapper(typeof(MapperConfig));
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

@@ -7,6 +7,7 @@ namespace Demo_API.Model
     {
         public int Id { get; set; }
         public string CustomerName { get; set; }=string.Empty;
+     
         public string CustomerEmail { get; set; }=string.Empty;
         public string CustomerPhone { get; set; }=string.Empty;
         public string CustomerAddress { get; set; }=string.Empty;
@@ -21,6 +22,7 @@ namespace Demo_API.Model
         public ICollection<Invoice>? Invoices { get; set; }
         [Column(TypeName = "bit")]
         public bool? IsActive { get; set; } = true;
+        // generate script for insert data to database 1000 row
 
     }
 }
