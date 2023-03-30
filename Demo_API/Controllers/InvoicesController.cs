@@ -32,7 +32,36 @@ namespace Demo_API.Controllers
           {
               return NotFound();
           }
-            return await _context.Invoices.ToListAsync();
+            var invoices = await _context.Invoices
+           .Include(i => i.Customer)
+           .Include(i => i.Company)
+           .Select(i => new Invoice
+           {
+               InvoiceId = i.InvoiceId,
+               InvoiceDate = i.InvoiceDate,
+               Amount = i.Amount,
+               IsActive = i.IsActive,
+               CompanyId= i.Company.CompanyId,
+               CustomerId = i.Customer.Id,
+               Customer =_mapper.Map<Customer>( new CustomerUpdate
+               {
+                   Id = i.Customer.Id,
+                   CustomerName = i.Customer.CustomerName,
+                   CustomerEmail = i.Customer.CustomerEmail,
+                   CustomerPhone = i.Customer.CustomerPhone
+                   
+               }),
+               Company =_mapper.Map<Company>( new CompanyDtoUpdate
+               {
+                   CompanyId = i.Company.CompanyId,
+                   Name = i.Company.Name,
+                   Address = i.Company.Address,
+                   IsActive = i.Company.IsActive
+               })
+           })
+           .Where(x=>x.IsActive.Equals(true))
+           .ToListAsync();
+            return Ok(invoices);
         }
 
         // GET: api/Invoices/5
@@ -43,7 +72,33 @@ namespace Demo_API.Controllers
           {
               return NotFound();
           }
-            var invoice = await _context.Invoices.Where(x=>x.IsActive.Equals(true) && x.InvoiceId.Equals(id)).FirstAsync();
+            var invoice = await _context.Invoices
+           .Include(i => i.Customer)
+           .Include(i => i.Company)
+           .Select(i => new Invoice
+           {
+               InvoiceId = i.InvoiceId,
+               InvoiceDate = i.InvoiceDate,
+               Amount = i.Amount,
+               IsActive = i.IsActive,
+               CompanyId = i.Company.CompanyId,
+               CustomerId = i.Customer.Id,
+               Customer = _mapper.Map<Customer>(new CustomerUpdate
+               {
+                   Id = i.Customer.Id,
+                   CustomerName = i.Customer.CustomerName,
+                   CustomerEmail = i.Customer.CustomerEmail,
+                   CustomerPhone = i.Customer.CustomerPhone
+
+               }),
+               Company = _mapper.Map<Company>(new CompanyDtoUpdate
+               {
+                   CompanyId = i.Company.CompanyId,
+                   Name = i.Company.Name,
+                   Address = i.Company.Address,
+                   IsActive = i.Company.IsActive
+               })
+           }).Where(x=>x.IsActive.Equals(true) && x.InvoiceId.Equals(id)).FirstAsync();
 
             if (invoice == null)
             {

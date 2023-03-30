@@ -32,7 +32,14 @@ namespace Demo_API.Controllers
           {
               return NotFound();
           }
-            return await _context.Companies.Where(x=>x.IsActive.Equals(true)).ToListAsync();
+            var companies = await _context.Companies
+                                    .Include(c => c.Invoices)
+                                    .Include(c => c.Customers)
+                                    .Where(x => x.IsActive.Equals(true))
+                                    .ToListAsync();
+            var companyDtos = _mapper.Map<List<Company>>(companies);
+             
+            return Ok(companyDtos);
         }
 
         // GET: api/Companies/5
