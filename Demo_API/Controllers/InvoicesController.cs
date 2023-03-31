@@ -26,7 +26,7 @@ namespace Demo_API.Controllers
 
         // GET: api/Invoices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
+        public async Task<ActionResult<BaseResponse<IEnumerable<Invoice>>>> GetInvoices()
         {
           if (_context.Invoices == null)
           {
@@ -61,12 +61,18 @@ namespace Demo_API.Controllers
            })
            .Where(x=>x.IsActive.Equals(true))
            .ToListAsync();
-            return Ok(invoices);
+            var response=new BaseResponse<IEnumerable<Invoice>>
+            {
+                Data = invoices,
+                StatusCode = 200,
+                Message = "Success"
+            };
+            return Ok(response);
         }
 
         // GET: api/Invoices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Invoice>> GetInvoice(int id)
+        public async Task<ActionResult<BaseResponse<Invoice>>> GetInvoice(int id)
         {
           if (_context.Invoices == null)
           {
@@ -104,8 +110,13 @@ namespace Demo_API.Controllers
             {
                 return NotFound();
             }
-
-            return invoice;
+            var response = new BaseResponse<Invoice>
+            {
+                Data = invoice,
+                StatusCode = 200,
+                Message = "Success"
+            };  
+            return response;
         }
 
         // PUT: api/Invoices/5

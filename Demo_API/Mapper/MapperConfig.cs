@@ -10,10 +10,13 @@ namespace Demo_API.Mapper
         {
             CreateMap<CompanyDtoCreate, Company>().ReverseMap();
             CreateMap<CompanyDtoUpdate, Company>().ReverseMap();
+            CreateMap<CompanyDtoGet, Company>().ReverseMap();
             CreateMap<CustomerDto, Customer>().ReverseMap();
             CreateMap<CustomerUpdate, Customer>().ReverseMap();
+            CreateMap<CustomerDtoGet, Customer>().ReverseMap();
             CreateMap<InvoiceDto, Invoice>().ReverseMap();
             CreateMap<InvoiceUpdate, Invoice>().ReverseMap();
+            CreateMap<InvoiceDtoGet, Invoice>().ReverseMap();
         }
     }
 }

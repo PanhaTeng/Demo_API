@@ -26,31 +26,82 @@ namespace Demo_API.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomers()
+        public async Task<ActionResult<BaseResponse<IEnumerable<CustomerDtoGet>>>> GetCustomers()
         {
           if (_context.Customers == null)
           {
               return NotFound();
           }
-            return await _context.Customers.Where(x=>x.IsActive.Equals(true)).ToListAsync();
+          var customers= await _context.Customers
+                .Include(cus=>cus.Invoices)
+                .Include(cus=>cus.Company)
+                .Select(cus=>new CustomerDtoGet
+                {
+                    Id = cus.Id,
+                    CustomerName = cus.CustomerName,
+                    CustomerEmail = cus.CustomerEmail,
+                    CustomerPhone = cus.CustomerPhone,
+                    CustomerCity = cus.CustomerCity,
+                    CustomerAddress = cus.CustomerAddress,
+                    CustomerSex = cus.CustomerSex,
+                    IDCardMadeDate = cus.IDCardMadeDate,
+                    IdentityCardNumber = cus.IdentityCardNumber,
+                    CompanyId= cus.CompanyId,
+                    IsActive = cus.IsActive,
+                    Company=_mapper.Map<CompanyDtoUpdate> (cus.Company),
+                    Invoices=_mapper.Map<List<InvoiceUpdate>>( cus.Invoices)
+                                  
+                })
+                .Where(x => x.IsActive.Equals(true)).ToListAsync();
+            var response = new BaseResponse<IEnumerable<CustomerDtoGet>>
+            {
+                Message = "success",
+                Data = customers,
+                StatusCode = 200,
+            };
+            return Ok(response);
         }
 
         // GET: api/Customers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Customer>> GetCustomer(int id)
+        public async Task<ActionResult<BaseResponse<CustomerDtoGet>>> GetCustomer(int id)
         {
           if (_context.Customers == null)
           {
               return NotFound();
           }
-            var customer = await _context.Customers.Where(x => x.IsActive.Equals(true) && x.Id.Equals(id)).FirstAsync();
+            var customer = await _context.Customers
+                .Include(cus => cus.Invoices)
+                .Include(cus => cus.Company)
+                .Select(cus => new CustomerDtoGet
+                {
+                    Id = cus.Id,
+                    CustomerName = cus.CustomerName,
+                    CustomerEmail = cus.CustomerEmail,
+                    CustomerPhone = cus.CustomerPhone,
+                    CustomerCity = cus.CustomerCity,
+                    CustomerAddress = cus.CustomerAddress,
+                    CustomerSex = cus.CustomerSex,
+                    IDCardMadeDate = cus.IDCardMadeDate,
+                    IdentityCardNumber = cus.IdentityCardNumber,
+                    IsActive = cus.IsActive,
+                    Company = _mapper.Map<CompanyDtoUpdate>(cus.Company),
+                    Invoices = _mapper.Map<List<InvoiceUpdate>>(cus.Invoices)
+
+                })
+                .Where(x => x.IsActive.Equals(true) && x.Id.Equals(id)).FirstAsync();
 
             if (customer == null)
             {
                 return NotFound();
             }
-
-            return customer;
+            var response=new BaseResponse<CustomerDtoGet>
+            {
+                Data=customer,
+                Message="success",
+                StatusCode=200
+            };
+            return Ok(response);
         }
 
         // PUT: api/Customers/5
@@ -74,6 +125,7 @@ namespace Demo_API.Controllers
             {
                 if (!CustomerExists(id))
                 {
+
                     return NotFound();
                 }
                 else
