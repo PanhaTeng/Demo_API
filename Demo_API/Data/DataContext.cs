@@ -1,9 +1,11 @@
 ﻿using Demo_API.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo_API.Data
 {
-    public class DataContext:DbContext
+    public class DataContext:IdentityDbContext<User>
     {
         public DataContext(DbContextOptions<DataContext> options):base(options)
         {
