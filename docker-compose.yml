@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  demo_chat_api:
+    container_name: demo_chat_api
+    ports:
+      - "40028:80"
+    environment:
+      - OPENAI_API_URL=https://api.openai.com/v1
+      - OPENAI_API_KEY=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
+    image: registry.bill24.net:60050/demo_chat_api:latest
+  demo_api:
+    image: registry.bill24.net:60050/ai/demo_api:latest
+    container_name: demo_api
+    ports:
+      - "40029:80"
