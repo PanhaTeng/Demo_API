@@ -9,11 +9,13 @@ using Demo_API.Data;
 using Demo_API.Model;
 using Demo_API.Model.Dto;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Demo_API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InvoicesController : ControllerBase
     {
         private readonly DataContext _context;
