@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Demo_API.Migrations
 {
     /// <inheritdoc />
-    public partial class init_all_authentication_model : Migration
+    public partial class init_authentication_model : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
